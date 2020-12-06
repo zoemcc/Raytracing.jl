@@ -28,12 +28,12 @@ using Test
     #@show Raytracing.generate_ray(camera2, 0.0, 0.0)
 
     spheresdf = Raytracing.SphereSignedDistanceField{T}(0.5)
-    @test spheresdf(origin) ≈ 0.5
+    @test spheresdf(origin) ≈ 1.0
     @test spheresdf(lookat) ≈ -0.5
     @test spheresdf(Point3{T}(0,0,0.5)) ≈ 0.0
 
-    @show Raytracing.normal(spheresdf, origin)
-    @show Raytracing.normalzygote(spheresdf, origin)
+    #@show Raytracing.normal(spheresdf, origin)
+    #@show Raytracing.normalzygote(spheresdf, origin)
     @test Raytracing.normal(spheresdf, origin) ≈ Raytracing.normalzygote(spheresdf, origin)
 
     id = IdentityTransformation()
