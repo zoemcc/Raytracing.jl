@@ -1,5 +1,6 @@
 using Raytracing
 using GeometryBasics
+using Random
 using CoordinateTransformations
 using ColorTypes
 using ColorVectorSpace
@@ -43,9 +44,11 @@ using Test
     normalmat = Raytracing.NormalShading()
 
     id = IdentityTransformation()
-    spherealbedo = RGB{T}(0.1, 0.8, 0.8)
+    spherealbedo = Vec{3, T}(0.8, 0.25, 0.25)
+
+    lambertianmat = Raytracing.Lambertian(spherealbedo)
     
-    sphereshape = Raytracing.Shape(id, spheresdf, normalmat)
+    sphereshape = Raytracing.Shape(id, spheresdf, lambertianmat)
 
 
     skyboxspheresdf = Raytracing.SphereSignedDistanceField{T}(100)
@@ -55,21 +58,25 @@ using Test
     #sceneshapes = @SVector [sphereshape]
     scene = Raytracing.Scene(sceneshapes)
 
-    image_height = 360
-    samples_per_pixel = 100
-    max_bounces_per_ray = 1
+    image_height = 2160
+    samples_per_pixel = 1
+    max_bounces_per_ray = 2
     max_steps_per_bounce = 200
     distance_tolerance = 1e-4
-    image = Raytracing.raytrace_image(scene, camera, image_height, samples_per_pixel, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance)
+    rng = MersenneTwister(1234)
+    rat = 2.0 / 0.70
+    len = 0.7
+    camera3 = Raytracing.make_camera(Point3{T}(0.0, rat * len, 1/rat * len), lookat, vup, vfov, aspectratio)
+    image = Raytracing.raytrace_image(scene, camera3, image_height, samples_per_pixel, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance, rng)
 
-    savename = "mefi_aa_sphere_skybox.png"
+    savename = "hifi_bistar_sphere_skybox.png"
     tmpdir = mktempdir()
     saved_image_path = "$(tmpdir)/$(savename)"
     save(saved_image_path, image)
     image_reloaded = load(saved_image_path)
 
     reference_image = load("$(savename)")
-    #saveimage("$(savename)", image)
+    Raytracing.saveimage("$(savename)", image)
 
     # Regression test
     @test image_reloaded ≈ reference_image
