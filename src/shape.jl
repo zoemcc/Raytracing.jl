@@ -1,14 +1,17 @@
-struct Shape{T<:Real, SDF<:AbstractSignedDistanceField{T}, TRANSFORM<:Transformation}
+struct Shape{T<:Real, Transform<:Transformation, SDF<:AbstractSignedDistanceField{T}, Mat<:AbstractMaterial}
     # Store the inverse pose since that's what we use to transform input points
-    invpose::TRANSFORM 
+    invpose::Transform 
     sdf::SDF
-    albedo::RGB{T}
+    mat::Mat
 end    
 
-invpose(shape::Shape) = shape.invpose
-sdf(shape::Shape) = shape.sdf
-albedo(shape::Shape) = shape.albedo
+@inline invpose(shape::Shape) = shape.invpose
+@inline sdf(shape::Shape) = shape.sdf
+@inline mat(shape::Shape) = shape.mat
 # Calculate the signed distance within the sdf's coordinate frame by using the inverse pose
-(shape::Shape{T, SDF, TRANSFORM})(point::Point{3, T}) where {T<:Real, SDF<:AbstractSignedDistanceField{T}, TRANSFORM<:Transformation} = sdf(shape)(invpose(shape)(point))
+@inline function (shape::Shape{T, Transform, SDF, Mat})(point::Point{3, T}) where 
+        {T<:Real, Transform<:Transformation, SDF<:AbstractSignedDistanceField{T}, Mat<:AbstractMaterial} 
+    sdf(shape)(invpose(shape)(point))
+end
 
 
