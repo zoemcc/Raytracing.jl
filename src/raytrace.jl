@@ -4,11 +4,15 @@ function raytrace_image(scene::Scene, cam::Camera{T}, image_height::Integer, sam
     image_width = Int64(floor(aspect_ratio_cam * image_height))
     out_image = zeros(RGB{T}, image_height, image_width)
     for i in 1:image_height, j in 1:image_width
-        s = T((j - 1)/(image_width - 1))
-        t = T((i - 1)/(image_height - 1))
-        ray = generate_ray(cam, s, t)
-        ray_color = raymarch(scene, ray, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance)
-        out_image[i, j] = ray_color
+        pixel_color = zero(RGB{T})
+        for rands in 1:samples_per_pixel
+            s = T((j - 1 + rand())/(image_width - 1))
+            t = T((i - 1 + rand())/(image_height - 1))
+            ray = generate_ray(cam, s, t)
+            ray_color = raymarch(scene, ray, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance)
+            pixel_color += ray_color ./ samples_per_pixel 
+        end
+        out_image[i, j] = pixel_color
     end
     out_image
 end

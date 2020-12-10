@@ -56,18 +56,20 @@ using Test
     scene = Raytracing.Scene(sceneshapes)
 
     image_height = 360
-    samples_per_pixel = 1
+    samples_per_pixel = 100
     max_bounces_per_ray = 1
     max_steps_per_bounce = 200
     distance_tolerance = 1e-4
     image = Raytracing.raytrace_image(scene, camera, image_height, samples_per_pixel, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance)
 
+    savename = "mefi_aa_sphere_skybox.png"
     tmpdir = mktempdir()
-    saved_image_path = "$(tmpdir)/lofi_sphere_skybox.png"
+    saved_image_path = "$(tmpdir)/$(savename)"
     save(saved_image_path, image)
     image_reloaded = load(saved_image_path)
 
-    reference_image = load("lofi_sphere_skybox.png")
+    reference_image = load("$(savename)")
+    #saveimage("$(savename)", image)
 
     # Regression test
     @test image_reloaded ≈ reference_image
