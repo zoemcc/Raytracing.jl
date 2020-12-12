@@ -58,7 +58,7 @@ using Test
     #sceneshapes = @SVector [sphereshape]
     scene = Raytracing.Scene(sceneshapes)
 
-    image_height = 2160
+    image_height = 10
     samples_per_pixel = 1
     max_bounces_per_ray = 2
     max_steps_per_bounce = 200
@@ -69,7 +69,7 @@ using Test
     camera3 = Raytracing.make_camera(Point3{T}(0.0, rat * len, 1/rat * len), lookat, vup, vfov, aspectratio)
     image = Raytracing.raytrace_image(scene, camera3, image_height, samples_per_pixel, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance, rng)
 
-    savename = "hifi_bistar_sphere_skybox.png"
+    savename = "lofi_bistar_sphere_skybox.png"
     tmpdir = mktempdir()
     saved_image_path = "$(tmpdir)/$(savename)"
     save(saved_image_path, image)
