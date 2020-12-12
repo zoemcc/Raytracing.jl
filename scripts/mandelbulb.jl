@@ -22,9 +22,9 @@ function main()
     vfov = T(40)
     camera = Raytracing.make_camera(origin, lookat, vup, vfov, aspectratio)
 
-    spheresdf = Raytracing.SphereSignedDistanceField{T}(0.5)
+    #spheresdf = Raytracing.SphereSignedDistanceField{T}(0.5)
 
-    mandelsdf = Raytracing.MandelBulbSignedDistanceField{T}(3)
+    mandelsdf = Raytracing.MandelBulbSignedDistanceField(3)
 
     point = Point3{T}(0, 0, 1)
     mandelsdf(point)
@@ -47,7 +47,7 @@ function main()
     sceneshapes = [skyboxsphereshape, mandelshape]
     scene = Raytracing.Scene(sceneshapes)
 
-    image_height = 360
+    image_height = 100
     samples_per_pixel = 3
     max_bounces_per_ray = 1
     max_steps_per_bounce = 400
