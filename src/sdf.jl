@@ -66,5 +66,35 @@ normal(sdf::MandelBulbSignedDistanceField, point::Point{3, T}) where {T<:Real} =
     normalforwarddiff(sdf, point)
 
 
+struct BoundingVolumeSignedDistanceField{T<:Real, BoundingSDF<:AbstractSignedDistanceField,
+                                         InteriorSDF<:AbstractSignedDistanceField} <:
+                                         AbstractSignedDistanceField
+    overshootfactor::T
+    boundingSDF::BoundingSDF
+    interiorSDF::InteriorSDF
+end
+
+overshootfactor(sdf::BoundingVolumeSignedDistanceField) = sdf.overshootfactor
+boundingSDF(sdf::BoundingVolumeSignedDistanceField) = sdf.boundingSDF
+interiorSDF(sdf::BoundingVolumeSignedDistanceField) = sdf.interiorSDF
+
+
+function (bsdf::BoundingVolumeSignedDistanceField)(point::Point{3, T}) where {T<:Real} 
+    bounding_signed_distance = boundingSDF(bsdf)(point)
+    if bounding_signed_distance > T(overshootfactor(bsdf))
+        bounding_signed_distance
+    else
+        interiorSDF(bsdf)(point)
+    end
+end
+
+function normal(bsdf::BoundingVolumeSignedDistanceField, point::Point{3, T}) where {T<:Real} 
+    bounding_signed_distance = boundingSDF(bsdf)(point)
+    if bounding_signed_distance > T(overshootfactor(bsdf))
+        normal(boundingSDF(bsdf), point)
+    else
+        normal(interiorSDF(bsdf), point)
+    end
+end
 
 

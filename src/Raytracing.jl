@@ -1,14 +1,19 @@
 module Raytracing
 
 using Random
+
 using GeometryBasics
 using Rotations
 using CoordinateTransformations
 using StaticArrays
 using LinearAlgebra
+
 using FiniteDifferences
 using ForwardDiff
 using Zygote
+
+using CUDA
+
 using ColorTypes
 using ColorVectorSpace
 using Images

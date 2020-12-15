@@ -24,7 +24,10 @@ function main()
 
     #spheresdf = Raytracing.SphereSignedDistanceField{T}(0.5)
 
-    mandelsdf = Raytracing.MandelBulbSignedDistanceField(3)
+    mandelsdf = Raytracing.MandelBulbSignedDistanceField(50)
+    boundingmandelspheresdf = Raytracing.SphereSignedDistanceField{T}(1.25)
+    overshootfactor = T(1.5)
+    boundingmandelsdf = Raytracing.BoundingVolumeSignedDistanceField(overshootfactor, boundingmandelspheresdf, mandelsdf)
 
     point = Point3{T}(0, 0, 1)
     mandelsdf(point)
@@ -38,13 +41,14 @@ function main()
     #lambertianmat = Raytracing.Lambertian(mandelalbedo)
     
     #mandelshape = Raytracing.Shape(id, mandelsdf, lambertianmat)
-    mandelshape = Raytracing.Shape(id, mandelsdf, normalmat)
+    mandelshape = Raytracing.Shape(id, boundingmandelsdf, normalmat)
+    #mandelshape = Raytracing.Shape(id, mandelsdf, normalmat)
 
 
     skyboxspheresdf = Raytracing.SphereSignedDistanceField{T}(100)
     skyboxsphereshape = Raytracing.Shape(id, skyboxspheresdf, normalmat)
 
-    sceneshapes = [skyboxsphereshape, mandelshape]
+    sceneshapes = (skyboxsphereshape, mandelshape)
     scene = Raytracing.Scene(sceneshapes)
 
     image_height = 100
@@ -58,8 +62,9 @@ function main()
     camera3 = Raytracing.make_camera(Point3{T}(0.0, rat * len, 1/rat * len), lookat, vup, vfov, aspectratio)
     @time image = Raytracing.raytrace_image(scene, camera3, image_height, samples_per_pixel, max_bounces_per_ray, max_steps_per_bounce, distance_tolerance, rng)
 
-    savename = "me_mandelbulb_3_normalshading.png"
-    Raytracing.saveimage("$(savename)", image)
+    savename = "lofi_mandelbulb_50_normalshading.png"
+    lofibig = Raytracing.supersample_crisp(image, 10)
+    Raytracing.saveimage("$(savename)", lofibig)
 
 
 end

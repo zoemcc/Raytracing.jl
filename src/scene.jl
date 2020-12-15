@@ -1,5 +1,5 @@
-struct Scene
-    shapes::Vector
+struct Scene{T<:Tuple}
+    shapes::T
 end
 
 shapes(scene::Scene) = scene.shapes
