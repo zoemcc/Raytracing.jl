@@ -17,7 +17,7 @@ function main()
     T = Float64
     origin = Point3{T}(0,0,1.5)
     lookat = Point3{T}(0,0,0)
-    vup = Vec3{T}(0,1,0)
+    vup = Point3{T}(0,1,0)
     aspectratio = T(16/9)
     vfov = T(40)
     camera = Raytracing.make_camera(origin, lookat, vup, vfov, aspectratio)

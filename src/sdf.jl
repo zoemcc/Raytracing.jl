@@ -1,25 +1,25 @@
 abstract type AbstractSignedDistanceField end
 
-(sdf::AbstractSignedDistanceField)(::Point{3, T}) where {T<:Real} = error("Signed Distance Field for $(typeof(sdf)) has not been defined.")
-normal(sdf::AbstractSignedDistanceField, ::Point{3, T}) where {T<:Real} = error("Normal of Signed Distance Field for $(typeof(sdf)) has not been defined.")
-normalzygote(sdf::AbstractSignedDistanceField, point::Point{3, T}) where {T<:Real} = 
-    Vec3{T}(normalize(Zygote.gradient(sdf, point)[1]))
-normalfinitediff(sdf::AbstractSignedDistanceField, point::Point{3, T}) where {T<:Real} = 
-    Vec3{T}(normalize(FiniteDifferences.grad(central_fdm(5, 1), sdf, point)[1]))
-normalforwarddiff(sdf::AbstractSignedDistanceField, point::Point{3, T}) where {T<:Real} = 
-    Vec3{T}(normalize(ForwardDiff.gradient(sdf, point)))
+(sdf::AbstractSignedDistanceField)(::AbstractArray) = error("Signed Distance Field for $(typeof(sdf)) has not been defined.")
+normal(sdf::AbstractSignedDistanceField, ::AbstractArray) = error("Normal of Signed Distance Field for $(typeof(sdf)) has not been defined.")
+normalzygote(sdf::AbstractSignedDistanceField, point::AbstractArray{T}) where {T<:Real} = 
+    normalize(Zygote.gradient(sdf, point)[1])
+normalfinitediff(sdf::AbstractSignedDistanceField, point::AbstractArray{T}) where {T<:Real} = 
+    normalize(FiniteDifferences.grad(central_fdm(5, 1), sdf, point)[1])
+normalforwarddiff(sdf::AbstractSignedDistanceField, point::AbstractArray{T}) where {T<:Real} = 
+    normalize(ForwardDiff.gradient(sdf, point))
 
 struct SphereSignedDistanceField{T<:Real} <: AbstractSignedDistanceField
     radius::T
 end
 
 radius(sdf::SphereSignedDistanceField) = sdf.radius
-(sdf::SphereSignedDistanceField{T1})(point::Point{3, T2}) where {T1<:Real, T2<:Real} = 
+(sdf::SphereSignedDistanceField{T1})(point::AbstractArray{T2}) where {T1<:Real, T2<:Real} = 
     norm(point) - T2(radius(sdf))
 
 # Currently always pointing out 
 normal(::SphereSignedDistanceField{T1}, point::Point{3, T2}) where {T1<:Real, T2<:Real} = 
-    Vec3{T2}(normalize(point))
+    Point3{T2}(normalize(point))
 
 
 struct MandelBulbSignedDistanceField <: AbstractSignedDistanceField

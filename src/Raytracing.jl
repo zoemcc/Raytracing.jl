@@ -13,11 +13,14 @@ using ForwardDiff
 using Zygote
 
 using CUDA
+using KernelAbstractions
 
 using ColorTypes
 using ColorVectorSpace
 using Images
 using ImageIO
+
+using SignedDistanceFunctions
 
 include("ray.jl")
 include("camera.jl")
