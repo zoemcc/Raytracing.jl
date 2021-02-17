@@ -166,17 +166,19 @@ end
 begin
 
     for i in 1:100
-        origin_move = Point3{T}(0,0,1.5 + 0.5 * sin((i / 10)))
-        lookat_move = Point3{T}(0 + sin(i/10),0 + cos(i/10),0)
-        vup_move = Point3{T}(0,1,0 + sin(i/100))
-        aspectratio = T(16/9)
-        vfov = T(40)
-        camera_move = Raytracing.make_camera(origin_move, lookat_move, vup_move, vfov, aspectratio)
+        @time begin 
+            origin_move = Point3{T}(0,0,3.5 + 0.5 * sin((i / 10)))
+            lookat_move = Point3{T}(0 + sin(i/10),0 + cos(i/10),0)
+            vup_move = Point3{T}(0,1,0 + sin(i/100))
+            aspectratio = T(16/9)
+            vfov = T(40)
+            camera_move = Raytracing.make_camera(origin_move, lookat_move, vup_move, vfov, aspectratio)
 
-        event = kernel_cu!(shaded_cu, pixelxs_cu, pixelys_cu, scene, camera_move, max_steps_per_bounce, distance_tolerance, ndrange=(image_height, image_width))
-        wait(event)
-        CUDA.copyto!(shaded_cu_cpu, shaded_cu)
-        makie_image[] = shaded_cu_cpu'
-        Observables.notify!(makie_image)
+            event = kernel_cu!(shaded_cu, pixelxs_cu, pixelys_cu, scene, camera_move, max_steps_per_bounce, distance_tolerance, ndrange=(image_height, image_width))
+            wait(event)
+            CUDA.copyto!(shaded_cu_cpu, shaded_cu)
+            makie_image[] .= shaded_cu_cpu'
+            Observables.notify!(makie_image)
+        end
     end
 end
